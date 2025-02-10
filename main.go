@@ -10,6 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -20,16 +22,17 @@ var (
 func main() {
 	parse()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
+	router := gin.Default()
+	router.GET("/health", func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "application/json; charset=utf-8")
+		ctx.String(http.StatusOK, "ok")
 	})
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Handler: router,
 	}
+
 	idleConnectionClosed := make(chan struct{})
 	go func() {
 		sigint := make(chan os.Signal, 1)

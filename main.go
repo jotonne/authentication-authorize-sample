@@ -27,8 +27,9 @@ func main() {
 	})
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           mux,
+		ReadHeaderTimeout: 10,
 	}
 	idleConnectionClosed := make(chan struct{})
 	go func() {
